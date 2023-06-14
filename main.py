@@ -11,7 +11,7 @@ openai.api_key = os.getenv("OPEN_API_KEY")
 def gerarComandoShell(texto):
     response = openai.Completion.create(
         engine="text-davinci-003",
-        prompt=f"Escreva um comando cmdlet que faça o seguinte: {texto}",
+        prompt=f"Escreva um comando shell que faça o seguinte: {texto}",
         temperature=0.7,
         max_tokens=2048,
         n=1,
@@ -20,15 +20,17 @@ def gerarComandoShell(texto):
     return response['choices'][0]['text'].strip()
 
 
-def executarComandoShell(comando):
+def execute_powershell_command(command):
     try:
-        resultado = subprocess.run(comando, shell=True, check=True)
-        print(resultado)
-    except subprocess.CalledProcessError as e:
-        print(e)
+        result = subprocess.run(["powershell", "-Command", command], capture_output=True, text=True)
+        output = result.stdout.strip()
+        return output
+    except Exception as e:
+        return str(e)
 
 
 descricao_comando = input("Digite a descrição para o comando shell: ")
 comando = gerarComandoShell(descricao_comando)
 print(f"Comando gerado:{comando}")
-executarComandoShell(comando)
+execute_powershell_command(comando)
+
